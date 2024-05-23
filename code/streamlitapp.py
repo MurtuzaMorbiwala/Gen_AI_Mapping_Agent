@@ -9,7 +9,7 @@ import os
 #load_dotenv()
 #api_key = os.getenv('GEMINI_API_KEY')
 
-api_key = st.secrets["API_KEY"]
+api_key = st.secrets["GEMINI_API_KEY"]
 
 # Function to generate SQL code
 def generate_sql(json_data_sources, json_data_target,json_example_data_sources,json_example_data_target,example_query):
