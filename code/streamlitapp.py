@@ -10,13 +10,13 @@ load_dotenv()
 api_key = os.getenv('GEMINI_API_KEY')
 
 # Function to generate SQL code
-def generate_sql(json_data_sources, json_data_target):
+def generate_sql(json_data_sources, json_data_target,json_example_data_sources,json_example_data_target):
     prompt = f'''
     You are an accurate SQL mapping assistant. Write a SQL query that uses the sources and maps to the target definition. The JSONs contain the metadata of the sources and targets. Important: Do not use the JSON in the SQL. The SQL should be accurate and should not contain any errors. The SQL should be modular but without unnecessary repetition.
 
     <EXAMPLE>
-    JSON for the Sources = {json_data_sources}
-    JSON for the Targets = {json_data_target}
+    JSON for the Sources = {json_example_data_sources}
+    JSON for the Targets = {json_example_data_target}
     
     -- CTE for Latest Department
     WITH LatestDepartment AS (
@@ -39,6 +39,9 @@ def generate_sql(json_data_sources, json_data_target):
     LEFT JOIN LatestDepartmentAddress lda ON ld.EmployeeID = lda.EmployeeID AND ld.DepartmentID = lda.DepartmentID
     WHERE ld.rn = 1;
     <EXAMPLE>
+    
+    JSON for the Sources = {json_data_sources}
+    JSON for the Targets = {json_data_target}
     '''
 
     url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
@@ -72,46 +75,43 @@ def app():
     st.title("SQL Query Generator")
 
     # Example JSON data
-    json_data_sources1 = '[{"Column1": "Value1", "Column2": "Value2"}, {"Column1": "Value3", "Column2": "Value4"}]'
-    json_data_target1 = '[{"Column1": "Value5", "Column2": "Value6"}, {"Column1": "Value7", "Column2": "Value8"}]'
-    json_data_sources2 = '[{"Column1": "Value9", "Column2": "Value10"}, {"Column1": "Value11", "Column2": "Value12"}]'
-    json_data_target2 = '[{"Column1": "Value13", "Column2": "Value14"}, {"Column1": "Value15", "Column2": "Value16"}]'
+    json_data_sources = '[{"Column1": "Value1", "Column2": "Value2"}, {"Column1": "Value3", "Column2": "Value4"}]'
+    json_data_target = '[{"Column1": "Value5", "Column2": "Value6"}, {"Column1": "Value7", "Column2": "Value8"}]'
+    json_example_data_sources = '[{"Column1": "Value9", "Column2": "Value10"}, {"Column1": "Value11", "Column2": "Value12"}]'
+    json_example_data_target = '[{"Column1": "Value13", "Column2": "Value14"}, {"Column1": "Value15", "Column2": "Value16"}]'
 
     # Create DataFrames from JSON data
-    df_sources1 = pd.read_json(json_data_sources1)
-    df_target1 = pd.read_json(json_data_target1)
-    df_sources2 = pd.read_json(json_data_sources2)
-    df_target2 = pd.read_json(json_data_target2)
+    df_sources = pd.read_json(json_data_sources)
+    df_target = pd.read_json(json_data_target)
+    df_example_sources = pd.read_json(json_example_data_sources)
+    df_example_target = pd.read_json(json_example_data_target)
 
     # Allow editing of DataFrames
     st.subheader("Edit Sources1 DataFrame")
-    edited_df_sources1 = st.experimental_data_editor(df_sources1)
+    edited_df_sources = st.data_editor(df_sources)
 
     st.subheader("Edit Target1 DataFrame")
-    edited_df_target1 = st.experimental_data_editor(df_target1)
+    edited_df_target = st.data_editor(df_target)
 
     st.subheader("Edit Sources2 DataFrame")
-    edited_df_sources2 = st.experimental_data_editor(df_sources2)
+    edited_df_example_sources = st.data_editor(df_example_sources)
 
     st.subheader("Edit Target2 DataFrame")
-    edited_df_target2 = st.experimental_data_editor(df_target2)
+    edited_df_example_target = st.data_editor(df_example_target)
 
     # Convert edited DataFrames to JSON
-    json_data_sources1 = edited_df_sources1.to_json(orient='records')
-    json_data_target1 = edited_df_target1.to_json(orient='records')
-    json_data_sources2 = edited_df_sources2.to_json(orient='records')
-    json_data_target2 = edited_df_target2.to_json(orient='records')
+    json_data_sources = edited_df_sources.to_json(orient='records')
+    json_data_target = edited_df_target.to_json(orient='records')
+    json_example_data_sources = edited_df_example_sources.to_json(orient='records')
+    json_example_data_target = edited_df_example_target.to_json(orient='records')
 
     # Generate SQL code
-    sql_code1 = generate_sql(json_data_sources1, json_data_target1)
-    sql_code2 = generate_sql(json_data_sources2, json_data_target2)
-
+    sql_code = generate_sql(json_data_sources, json_data_target,json_example_data_sources,json_example_data_target)
+    
     # Display SQL code
-    st.subheader("Generated SQL Code 1")
-    st.code(sql_code1, language='sql')
+    st.subheader("Generated SQL Code")
+    st.code(sql_code, language='sql')
 
-    st.subheader("Generated SQL Code 2")
-    st.code(sql_code2, language='sql')
 
 if __name__ == "__main__":
     app()
