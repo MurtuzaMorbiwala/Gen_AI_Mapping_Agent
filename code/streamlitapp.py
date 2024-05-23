@@ -2,12 +2,14 @@ import streamlit as st
 import pandas as pd
 import json
 import requests
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
 
-# Load environment variables
-load_dotenv()
-api_key = os.getenv('GEMINI_API_KEY')
+## Load environment variables
+#load_dotenv()
+#api_key = os.getenv('GEMINI_API_KEY')
+
+api_key = st.secrets["API_KEY"]
 
 # Function to generate SQL code
 def generate_sql(json_data_sources, json_data_target,json_example_data_sources,json_example_data_target,example_query):
