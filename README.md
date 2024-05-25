@@ -10,3 +10,6 @@ The output of the agent can be enhanced by providing more direction into the pro
 It only took 2 suggestions to generate the query using a single prompt. With the example provided the query was generated instantly. 
 
 [Mapping Agent Inputs and Outputs](https://github.com/MurtuzaMorbiwala/Gen_AI_Mapping_Agent_Excel_Metadata/blob/main/docs/MappingAgent.pdf)
+
+
+[Mapping Agent Stremlit App](https://genaimappingagent.streamlit.app/)
